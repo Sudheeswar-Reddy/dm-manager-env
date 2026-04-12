@@ -1,11 +1,17 @@
 """
 Task Graders for DM Manager
 ============================
-Each grader takes the final environment state and returns a score in [0.0, 1.0].
+Each grader takes the final environment state and returns a score in (0.0, 1.0).
+Scores are strictly exclusive of 0.0 and 1.0 per hackathon validator requirements.
 """
 
 from __future__ import annotations
 from typing import Dict, Any, Tuple
+
+
+def _strict(score: float) -> float:
+    """Clamp score to strictly open interval (0.0, 1.0)."""
+    return round(min(max(score, 0.001), 0.999), 4)
 
 
 def grade_task_easy(state: Dict[str, Any]) -> Tuple[float, str]:
@@ -15,7 +21,7 @@ def grade_task_easy(state: Dict[str, Any]) -> Tuple[float, str]:
     """
     messages = state.get("messages", {})
     if not messages:
-        return 0.0, "No messages found in state."
+        return 0.001, "No messages found in state."
 
     correct = 0
     total = 0
@@ -42,7 +48,7 @@ def grade_task_easy(state: Dict[str, Any]) -> Tuple[float, str]:
     score = min(1.0, score + efficiency_bonus)
 
     report = f"Classification score: {correct}/{total} correct. {'; '.join(details)}."
-    return round(score, 4), report
+    return _strict(score), report
 
 
 def grade_task_medium(state: Dict[str, Any]) -> Tuple[float, str]:
@@ -52,7 +58,7 @@ def grade_task_medium(state: Dict[str, Any]) -> Tuple[float, str]:
     """
     messages = state.get("messages", {})
     if not messages:
-        return 0.0, "No messages found."
+        return 0.001, "No messages found."
 
     # Part 1 — classification
     correct_clf = sum(
@@ -70,8 +76,6 @@ def grade_task_medium(state: Dict[str, Any]) -> Tuple[float, str]:
     )
     gt_order = [mid for mid, _ in gt_sorted]
 
-    # Reconstruct agent order from priority field set during episode
-    # (we check against ground truth order using Spearman)
     from environment import _rank_overlap_score
 
     # Derive agent's implied order from their assigned priorities
@@ -94,7 +98,7 @@ def grade_task_medium(state: Dict[str, Any]) -> Tuple[float, str]:
         f"Classification: {clf_score:.2f}, Priority ordering: {priority_score:.2f}, "
         f"Combined: {combined:.2f}. GT order: {gt_order}."
     )
-    return round(combined, 4), report
+    return _strict(combined), report
 
 
 def grade_task_hard(state: Dict[str, Any]) -> Tuple[float, str]:
@@ -104,7 +108,7 @@ def grade_task_hard(state: Dict[str, Any]) -> Tuple[float, str]:
     """
     messages = state.get("messages", {})
     if not messages:
-        return 0.0, "No messages found."
+        return 0.001, "No messages found."
 
     from environment import _rank_overlap_score, _score_draft, Message, MessageType, Priority
 
@@ -165,7 +169,7 @@ def grade_task_hard(state: Dict[str, Any]) -> Tuple[float, str]:
         f"Draft quality: {draft_score:.2f} (individual: {[round(s,2) for s in draft_scores]}), "
         f"Final: {combined:.2f}."
     )
-    return round(combined, 4), report
+    return _strict(combined), report
 
 
 # ──────────────────────────────────────────────

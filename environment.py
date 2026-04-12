@@ -1,19 +1,9 @@
 """
-DM Manager OpenEnv Environment — v2
+DM Manager OpenEnv Environment — 
 =====================================
 Real-world simulation of managing a messaging inbox.
 
-Changes from v1:
-  - Message corpus expanded from 12 → 36 messages (12 per type)
-  - Keywords expanded significantly (100+ per category)
-  - 2 new tasks: task_urgent_triage, task_selective_archive
-  - task_hard now uses 8 messages instead of 6
-  - reset() sampling fixed: shuffles full pool with seed so
-    different seeds always yield different message sets
-  - _score_draft improved: checks negation, urgency language,
-    length tiers, and avoids rewarding copy-paste replies
-  - Partial credit on priority ordering (top-N overlap bonus)
-  - ARCHIVE action now contextually rewarded for spam/newsletter types
+
 """
 
 from __future__ import annotations
