@@ -1,0 +1,56 @@
+{
+  "model": "Qwen/Qwen2.5-72B-Instruct",
+  "api_base": "https://router.huggingface.co/v1",
+  "tasks": [
+    {
+      "task_id": "task_easy",
+      "steps": 3,
+      "score": 1.0,
+      "final_score": 1.0,
+      "success": true,
+      "rewards": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    {
+      "task_id": "task_medium",
+      "steps": 6,
+      "score": 0.925,
+      "final_score": 0.925,
+      "success": true,
+      "rewards": [
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.38
+      ]
+    },
+    {
+      "task_id": "task_hard",
+      "steps": 13,
+      "score": 0.8105,
+      "final_score": 0.8105,
+      "success": true,
+      "rewards": [
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.309,
+        0.15,
+        0.21,
+        0.225,
+        0.15,
+        0.21,
+        0.24
+      ]
+    }
+  ],
+  "average_score": 0.9118333333333334
+}

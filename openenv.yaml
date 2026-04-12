@@ -1,0 +1,94 @@
+name: dm-manager
+version: "1.0.0"
+description: >
+  Real-world DM inbox management environment. The agent must classify
+  messages as formal, emotional, or normal; prioritise them by importance;
+  and draft contextually appropriate replies. Simulates the daily task of
+  managing a personal or professional messaging inbox.
+
+tags:
+  - openenv
+  - real-world
+  - nlp
+  - communication
+  - classification
+  - planning
+
+tasks:
+  - id: task_easy
+    name: "Message Classification"
+    difficulty: easy
+    description: "Classify 3 inbox messages as formal, emotional, or normal."
+    max_steps: 6
+    reward_range: [-0.1, 0.4]
+
+  - id: task_medium
+    name: "Inbox Triage"
+    difficulty: medium
+    description: "Classify and prioritise 5 mixed inbox messages."
+    max_steps: 12
+    reward_range: [-0.15, 0.7]
+
+  - id: task_hard
+    name: "Full DM Management"
+    difficulty: hard
+    description: "Classify, prioritise, and draft replies for 6 messages of varying types."
+    max_steps: 25
+    reward_range: [-0.3, 1.0]
+
+observation_space:
+  type: object
+  fields:
+    task_id: string
+    task_description: string
+    messages:
+      type: array
+      items:
+        id: string
+        sender: string
+        content: string
+        timestamp: string
+        message_type: "formal | emotional | normal | null"
+        priority: "high | medium | low | null"
+        is_read: boolean
+        draft_reply: "string | null"
+    current_step: integer
+    max_steps: integer
+    inbox_size: integer
+    unread_count: integer
+    pending_actions: "array[string]"
+    last_action_feedback: "string | null"
+
+action_space:
+  type: object
+  fields:
+    action_type: "classify | prioritize | draft_reply | mark_read | archive"
+    message_id: "string (optional)"
+    classification: "formal | emotional | normal (for classify)"
+    priority: "high | medium | low (optional)"
+    draft_text: "string (for draft_reply)"
+    priority_order: "array[string] (for prioritize)"
+
+reward:
+  type: float
+  range: [-1.0, 1.0]
+  signals:
+    - correct_classification: +0.30 per message
+    - wrong_classification: -0.10
+    - priority_overlap_score: up to +0.40
+    - draft_quality: up to +0.30 per message
+    - archive_low_priority: +0.05
+    - archive_important: -0.15
+    - timeout: episode ends at max_steps
+
+endpoints:
+  reset: POST /reset?task_id={task_id}&session_id={session_id}
+  step: POST /step?session_id={session_id}
+  state: GET /state?session_id={session_id}
+  grade: POST /grade?session_id={session_id}
+  tasks: GET /tasks
+  health: GET /health
+
+python_version: "3.11"
+framework: fastapi
+deployment: huggingface-spaces
